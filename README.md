@@ -2,6 +2,7 @@
 A collection of code used for our study detailing the genomic basis for the silvering polymorphism in Speyeria mormonia.
 
 **1. Quality control - fastqc**
+
 TBA
 
 **2. Alignment and genotype calling**
@@ -260,6 +261,70 @@ gatk —java-options "-Xmx4G -XX:+UseParallelGC -XX:ParallelGCThreads=64" Varian
 -filter "ReadPosRankSum < -20.0" —filter-name "ReadPosRankSum-20" \
 -O Smor.indels_filtered.vcf.gz
 ```
+
+3. Alignment QC (depth measurments)
+
+#Checking alignments for overall depth using mosdepth
+
+```
+check_depth.sh
+
+#!/bin/bash
+#SBATCH -J mosdepth
+#SBATCH -o mosdepth.out
+#SBATCH -e mosdepth.err
+#SBATCH -p nano
+#SBATCH -n 32
+#SBATCH -t 30:00
+#SBATCH --mail-type=END
+#SBATCH --mail-user=lucalivraghi@gwu.edu
+
+for i in *.bam; do
+mosdepth --threads 32 --by 500 --fast-mode ./mosdepth/depth_${i} ${i}
+done
+
+```
+
+Check the resulting mosdepth.summary.txt for coverage by chromosome, and average coverage.
+
+For a slightly more accurate (but way slower method) of calculating genome-wide coverage you can use Bedtools genomecov as follows:
+First generate a sizes.genome file with all chromosomes and their sizes:
+
+```
+samtools faidx genome.fasta
+cut -f1,2 genome.fa.fai > sizes.genome
+```
+
+Then run bedtools for calculating coverage:
+
+```
+bedtools_genomcov.sh
+
+#!/bin/bash
+#SBATCH -J bedtools
+#SBATCH -o bedtools.out
+#SBATCH -e bedtools.err
+#SBATCH -p tiny
+#SBATCH -n 32
+#SBATCH -t 1:30:00
+#SBATCH --mail-type=END
+#SBATCH --mail-user=lucalivraghi@gwu.edu
+
+for i in *.bam; do
+bedtools genomecov -ibam ${i} -g sizes.genome -d > ${i}_coverage_output.txt
+done
+```
+
+The -d argument specifies to calculate true coverage for each position in the genome. 
+This generates pretty big files, which you can then awk to get an average for each position in the genome:
+
+```
+awk '{sum += $3} END {print "Average coverage:", sum/NR}' SRR25297463_coverage_output.txt
+```
+
+Outputs from mosdepth and bedtools are very similar, so probably not worth running bedtools.
+
+
 
 
 
