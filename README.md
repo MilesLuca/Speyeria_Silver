@@ -28,9 +28,9 @@ Shyd_WA_05 Shyd_WA_06 Shyd_WA_08 Shyd_WA_09 Shyd_WA_10 Smor_WA_01 Smor_WA_02 Smo
 
 Make a directory to store the alignment statistics in
 
-'''
+```
 mkdir alnstats
-'''
+```
 
 Generate a script to run job as array (75 samples total)
 This script is run in two parts
@@ -54,7 +54,7 @@ Part B (**genotypeGVCFs.sh**): Merge gVCFs, call genotypes and produce the VCF, 
 2. Run the gatk tool GenotypeGVCFs on the combined gVCF. This is the 'genotype calling' step. This program goes through each site in the genome, looks at the variants from the gVCF for each individual, and calls the genotype at each site. The output is one row per variant, one column per individual (ie, a VCF).
 3-6, Filtering. Based on previosuly used filtering parameters optimised for Heliconius butterfly studies. These steps will create two final vcfs, one that contains just SNPs and one that contains just indels.
 
-'''
+```
 makeGVCF.array.sh
 
 #!/bin/bash
@@ -105,6 +105,6 @@ gatk —java-options "-Xmx40G -XX:+UseParallelGC -XX:ParallelGCThreads=32" Haplo
 -I ${names[${SLURM_ARRAY_TASK_ID}]}.marked.RG.bam \
 -O ${names[${SLURM_ARRAY_TASK_ID}]}.raw.g.vcf \
 -ERC GVCF
-'''
+```
 
 
