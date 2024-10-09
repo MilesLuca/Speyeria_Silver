@@ -85,7 +85,7 @@ makeGVCF.array.sh
 #SBATCH -t 3-00:00:00
 #SBATCH --mail-type=END
 #SBATCH --mail-user=lucalivraghi@gwu.edu
-#SBATCH --array=0-51%10
+#SBATCH --array=0-74%10
 
 module load samtools
 module load bwa
@@ -907,6 +907,39 @@ p2$widths[2:5] <- as.list(maxWidth)
 
 grid.arrange(p0, p1, p2, ncol = 1, heights = c(2.5, 10 ,10))
 ```
+
+# 9. Principle component analysis for genome-wide and GWAS specific regions
+
+Here I used plink to generate PCAs for both the genome-wide dataset and for the region spanning the GWAS signal.
+These were run on the filtered set of vcfs produced at the end of step 4. 
+
+**First prune SNPs for linkage using plink**
+
+```
+plink --vcf morm.NV.WA.filtered.phased.vcf.gz --double-id --allow-extra-chr \
+--set-missing-var-ids @:# \
+--indep-pairwise 50 10 0.1 --out linkage_pruned
+```
+
+**Then run the PCA on the genomewide vcf containing both pops (WA and NV)**
+
+```
+plink --vcf morm.NV.WA.filtered.phased.vcf.gz --double-id --allow-extra-chr --set-missing-var-ids @:# \
+--extract linkage_pruned.prune.in \
+--make-bed --pca --out PCA_WA_NV
+```
+
+**Now subset the vcf to the GWAS region, and re-run PCA for just this genomic interval**
+
+```
+bcftools filter --threads 32 morm.NV.WA.filtered.phased.vcf.gz -r Smor1400:1508454-1511684 -O z -o GWAS.morm.NV.WA.filtered.phased.vcf.gz
+
+plink --vcf GWAS.morm.NV.WA.filtered.phased.vcf.gz --double-id --allow-extra-chr --set-missing-var-ids @:# \
+--make-bed --pca var-wts --out PCA_WA_NV_GWAS
+```
+
+
+
 
 
 
