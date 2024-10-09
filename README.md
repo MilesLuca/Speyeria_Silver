@@ -26,7 +26,7 @@ A collection of code used for our study detailing the genomic basis for the silv
 ### 10. Genotype plot for SNP illutsration at the GWAS interval
 
 
-
+-----------------------------------------------------------------------------------------------------------------------------------
 
 
 ## 1. Alignment and genotype calling
