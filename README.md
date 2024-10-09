@@ -5,28 +5,28 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 # I. Figure 1 - GWAS, Fst, PCAs and genotype plots
 
+### 1. Alignment and genotype calling
+
+### 2. Alignment QC (depth measurments)
+
+### 3. VCF filtering
+
+### 4. Genome-wide association using GEMMA
+
+### 5. Importing p-values and chromosome positions in R and plotting
+
+### 6. Code for calculating Fst on morphs by populations
+
+### 7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R
+
+### 8. Principle component analysis for genome-wide and GWAS specific regions
+
+### 9. Plot PCAs in R
+
+### 10. Genotype plot for SNP illutsration at the GWAS interval
+
+
 ## 1. Alignment and genotype calling
-
-## 2. Alignment QC (depth measurments)
-
-## 3. VCF filtering
-
-## 4. Genome-wide association using GEMMA
-
-## 5. Importing p-values and chromosome positions in R and plotting
-
-## 6. Code for calculating Fst on morphs by populations
-
-## 7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R
-
-## 8. Principle component analysis for genome-wide and GWAS specific regions
-
-## 9. Plot PCAs in R
-
-## 10. Genotype plot for SNP illutsration at the GWAS interval
-
-
-# 1. Alignment and genotype calling
 
 The following code is used to generate genome indexes, align sequencing data, mark sequencing duplicates, call genotypes and produce vcf files for downstream analyses.
 
