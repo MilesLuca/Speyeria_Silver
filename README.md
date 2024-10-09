@@ -3,25 +3,28 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 # Table of contents
 
-**1. Alignment and genotype calling**
+# I. Figure 1 - GWAS, Fst, PCAs and genotype plots
 
-**2. Alignment QC (depth measurments)**
+## 1. Alignment and genotype calling
 
-**3. VCF filtering**
+## 2. Alignment QC (depth measurments)
 
-**4. Genome-wide association using GEMMA**
+## 3. VCF filtering
 
-**5. Importing p-values and chromosome positions in R and plotting**
+## 4. Genome-wide association using GEMMA
 
-**6. Code for calculating Fst on morphs by populations**
+## 5. Importing p-values and chromosome positions in R and plotting
 
-**7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R**
+## 6. Code for calculating Fst on morphs by populations
 
-**8. Principle component analysis for genome-wide and GWAS specific regions**
+## 7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R
 
-**9. Plot PCAs in R**
+## 8. Principle component analysis for genome-wide and GWAS specific regions
 
-**10. Genotype plot for SNP illutsration at the GWAS interval**
+## 9. Plot PCAs in R
+
+## 10. Genotype plot for SNP illutsration at the GWAS interval
+
 
 # 1. Alignment and genotype calling
 
@@ -1197,7 +1200,7 @@ dev.copy(pdf, 'optixPlot_GWAS_zoomin.pdf',width=20,height=10)
 dev.off()
 ```
 
-
+# 11. Haplotype based statistics  
 
 
 
