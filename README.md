@@ -19,6 +19,9 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 **8. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R**
 
+**9. Principle component analysis for genome-wide and GWAS specific regions**
+
+**10. Plot PCAs in R**
 
 # 1. Quality control - fastqc
 
@@ -1093,7 +1096,110 @@ dev.copy(pdf, 'PCA_GWAS_interval.pdf',width=12,height=7)
 dev.off()
 ```
 
+# 11. Genotype plot for SNP illutsration at the GWAS interval 
 
+I jused Jim Whiting's genotype_plot code to plot each SNP along the GWAS interval as either reference, heterozygous for reference/alternative allele, or homozygous for alternative allele. 
+
+**First, generate a popsfile encoding each sample**
+
+```
+nano popsfile.txt
+
+Smor_WA_01      Silver_Smor_WA
+Smor_WA_02      Silver_Smor_WA
+Smor_WA_07      Buff_Smor_WA
+Smor_WA_11      Silver_Smor_WA
+Smor_WA_13      Buff_Smor_WA
+Smor_WA_14      Buff_Smor_WA
+Smor_WA_15      Silver_Smor_WA
+Smor_WA_16      Buff_Smor_WA
+Smor_WA_17      Buff_Smor_WA
+Smor_WA_18      Buff_Smor_WA
+Smor_WA_19      Silver_Smor_WA
+Smor_WA_20      Silver_Smor_WA
+Smor_WA_21      Silver_Smor_WA
+Smor_WA_22      Silver_Smor_WA
+Smor_WA_23      Buff_Smor_WA
+Smor_WA_24      Silver_Smor_WA
+Smor_WA_25      Silver_Smor_WA
+Smor_WA_26      Silver_Smor_WA
+Smor_WA_27      Silver_Smor_WA
+Smor_WA_28      Buff_Smor_WA
+Smor_WA_29      Silver_Smor_WA
+Smor_WA_30      Buff_Smor_WA
+Smor_WA_31      Silver_Smor_WA
+Smor_WA_32      Buff_Smor_WA
+Smor_WA_33      Silver_Smor_WA
+Smor_WA_34      Silver_Smor_WA
+Smor_WA_35      Buff_Smor_WA
+Smor_WA_37      Buff_Smor_WA
+Smor_WA_38      Silver_Smor_WA
+Smor_WA_39      Silver_Smor_WA
+Smor_WA_40      Buff_Smor_WA
+Smor_WA_41      Buff_Smor_WA
+Smor_WA_42      Silver_Smor_WA
+Smor_WA_43      Buff_Smor_WA
+Smor_WA_44      Silver_Smor_WA
+Smor_WA_45      Buff_Smor_WA
+Smor_WA_46      Buff_Smor_WA
+Smor_WA_47      Buff_Smor_WA
+Smor_WA_48      Silver_Smor_WA
+NVJ_51_Smor_B   Buff_Smor_NVJ
+NVJ_52_Smor_S   Silver_Smor_NVJ
+NVJ_53_Smor_B   Buff_Smor_NVJ
+NVJ_54_Smor_B   Buff_Smor_NVJ
+NVJ_55_Smor_S   Silver_Smor_NVJ
+NVJ_56_Smor_S   Silver_Smor_NVJ
+NVJ_57_Smor_B   Buff_Smor_NVJ
+NVJ_58_Smor_B   Buff_Smor_NVJ
+NVJ_59_Smor_B   Buff_Smor_NVJ
+NVJ_60_Smor_S   Silver_Smor_NVJ
+NVJ_61_Smor_B   Buff_Smor_NVJ
+NVJ_62_Smor_S   Silver_Smor_NVJ
+NVJ_63_Smor_S   Silver_Smor_NVJ
+NVJ_64_Smor_B   Buff_Smor_NVJ
+NVJ_65_Smor_S   Silver_Smor_NVJ
+NVJ_66_Smor_S   Silver_Smor_NVJ
+NVJ_67_Smor_S   Silver_Smor_NVJ
+NVJ_68_Smor_B   Buff_Smor_NVJ
+NVJ_69_Smor_B   Buff_Smor_NVJ
+NVJ_70_Smor_B   Buff_Smor_NVJ
+NVJ_71_Smor_B   Buff_Smor_NVJ
+NVJ_72_Smor_S   Silver_Smor_NVJ
+NVJ_73_Smor_B   Buff_Smor_NVJ
+NVJ_74_Smor_B   Buff_Smor_NVJ
+NVJ_75_Smor_S   Silver_Smor_NVJ
+NVJ_76_Smor_B   Buff_Smor_NVJ
+NVJ_77_Smor_S   Silver_Smor_NVJ
+NVJ_78_Smor_S   Silver_Smor_NVJ
+NVJ_79_Smor_S   Silver_Smor_NVJ
+NVJ_80_Smor_S   Silver_Smor_NVJ
+NVJ_81_Smor_S   Silver_Smor_NVJ
+```
+
+**Then use the tool to plot the SNPs in R**
+
+I used the same vcf that was used to generate the PCAs, focusing on the GWAS region.
+
+```
+library(GenotypePlot)
+
+popmap <- read.table('popsfile.txt', h=F)
+
+new_plot <- genotype_plot(vcf="morm.NV.WA.filtered.phased.vcf.gz",
+                          chr="Smor1400",
+                          start=1507000,
+                          end=1510500,
+                          popmap=popmap,
+                          cluster=TRUE,
+                          snp_label_size=1000,
+                          invariant_filter = TRUE,
+                          #polarise_genotypes='buff',
+                          colour_scheme=c("#1babe2","#b0207c","#f89c30"))
+combine_genotype_plot(new_plot)
+dev.copy(pdf, 'optixPlot_GWAS_zoomin.pdf',width=20,height=10)
+dev.off()
+```
 
 
 
