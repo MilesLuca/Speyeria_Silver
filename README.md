@@ -37,23 +37,19 @@ mkdir alnstats
 
 This script is run in two parts
 
-The first is a script called: 
+The first is a script called: **makeGVCF.array.sh**
 
-**makeGVCF.array.sh**
+Part A (**makeGVCF.array.sh**): Call variants on each individual against the genome:
+1. Aligns using bwa-mem (preferred aligner for genotyping)
+2. Marks duplicate reads (using a gatk-instance of picard's MarkDuplicates)
+3. Ensures that sensible names are assigned to each individual with "AddOrReplaceReadGroups" (this is important when merging the files in part B).
+4. Produces the gvcf (genotype variant call file), one per individual. This file will score every site in the genome as either non-variant or variant.
 
-Part A (**makeGVCF.array.sh**): Call variants on each individual against the genome.
-1. align using bwa-mem (preferred aligner for genotyping)
-2. Mark duplicate reads (using a gatk-instance of picard's MarkDuplicates)
-3. Ensure that sensible names are assigned to each individual with "AddOrReplaceReadGroups" (this is important when merging the files in part B).
-4. produce the gvcf (genotype variant call file), one per individual. This file will score every site in the genome as either non-variant or variant.
-
-The second is a script called: 
-
-**genotypeGVCFs.sh**
+The second is a script called: **genotypeGVCFs.sh**
 
 Part B (**genotypeGVCFs.sh**): Merge gVCFs, call genotypes and produce the VCF, and then filter the VCF. 
-1. Run the gatk tool CombineGVCFs to merge all the gVCFs into one (very large) gvcf. This file includes a separate entry for every site in every individual so it is upsettingly large, but it runs quickly
-2. Run the gatk tool GenotypeGVCFs on the combined gVCF. This is the 'genotype calling' step. This program goes through each site in the genome, looks at the variants from the gVCF for each individual, and calls the genotype at each site. The output is one row per variant, one column per individual (ie, a VCF).
+1. Runs the gatk tool CombineGVCFs to merge all the gVCFs into one (very large) gvcf. This file includes a separate entry for every site in every individual so it is upsettingly large, but it runs quickly
+2. Runs the gatk tool GenotypeGVCFs on the combined gVCF. This is the 'genotype calling' step. This program goes through each site in the genome, looks at the variants from the gVCF for each individual, and calls the genotype at each site. The output is one row per variant, one column per individual (ie, a VCF).
 3-6, Filtering. Based on previosuly used filtering parameters optimised for Heliconius butterfly studies. These steps will create two final vcfs, one that contains just SNPs and one that contains just indels.
 
 **Run part A**
