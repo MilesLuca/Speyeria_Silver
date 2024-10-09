@@ -29,9 +29,7 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 
 
-
-
-### 1. Alignment and genotype calling
+## 1. Alignment and genotype calling
 
 The following code is used to generate genome indexes, align sequencing data, mark sequencing duplicates, call genotypes and produce vcf files for downstream analyses.
 
