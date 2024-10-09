@@ -938,7 +938,160 @@ plink --vcf GWAS.morm.NV.WA.filtered.phased.vcf.gz --double-id --allow-extra-chr
 --make-bed --pca var-wts --out PCA_WA_NV_GWAS
 ```
 
+# 10. Plot PCAs in R
 
+library(tidyverse)
+
+**Plot genome-wide PCA**
+
+**Read in plink output**
+
+```
+pca <- read_table("PCA_WA_NV.eigenvec", col_names = FALSE)
+eigenval <- scan("PCA_WA_NV.eigenval")
+
+# remove nuisance column
+pca <- pca[,-1]
+
+# set names
+names(pca)[1] <- "ind"
+names(pca)[2:ncol(pca)] <- paste0("PC", 1:(ncol(pca)-1))
+
+# sort out the individual species and pops
+# spp
+spp <- rep(NA, length(pca$ind))
+spp[grep("NVJ", pca$ind)] <- "Nevada"
+spp[grep("WA", pca$ind)] <- "Washington"
+
+# remake data.frame
+pca <- as_tibble(data.frame(pca, spp))
+
+# first convert to percentage variance explained
+pve <- data.frame(PC = 1:20, pve = eigenval/sum(eigenval)*100)
+
+# make plot for eignevalues
+a <- ggplot(pve, aes(PC, pve)) + geom_bar(stat = "identity")
+a + ylab("Percentage variance explained") + theme_light()
+
+# calculate the cumulative sum of the percentage variance explained
+cumsum(pve$pve)
+
+
+# plot pca
+b <- ggplot(pca, aes(PC1, PC2, col = spp, shape = spp)) + 
+  geom_point(size = 5, alpha = 0.6) + 
+  scale_shape_manual(values = c("Washington" = 17, "Nevada" = 16)) + 
+  scale_colour_manual(values = c("red", "blue")) + 
+  theme_classic()
+b + xlab(paste0("PC1 (", signif(pve$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)")) +
+  guides(color = "none", shape = "none")
+
+
+
+dev.copy(pdf, 'genowidepca_triangle.pdf',width=12,height=7)
+dev.off()
+
+
+#Plot GWAS interval PCA#
+
+
+#Read in plink output#
+pca <- read_table("PCA_WA_NV_GWAS.eigenvec", col_names = FALSE)
+eigenval <- scan("PCA_WA_NV_GWAS.eigenval")
+
+# remove nuisance column
+pca <- pca[,-1]
+
+
+# set names
+names(pca)[1] <- "ind"
+names(pca)[2:ncol(pca)] <- paste0("PC", 1:(ncol(pca)-1))
+
+# sort out the individual species and pops
+# spp
+spp <- rep(NA, length(pca$ind))
+spp[grep("NVJ", pca$ind)] <- "Nevada"
+spp[grep("WA", pca$ind)] <- "Washington"
+
+# sort out the individual species and pops
+# spp
+pheno <- rep(NA, length(pca$ind))
+pheno[grep("_S", pca$ind)] <- "Silver"
+pheno[grep("_B", pca$ind)] <- "Buff_Het"
+
+pheno[grep("NVJ_53_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+pheno[grep("NVJ_61_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+pheno[grep("NVJ_64_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+pheno[grep("NVJ_68_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+pheno[grep("NVJ_71_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+pheno[grep("NVJ_73_Smor_B.bam", pca$ind)] <- "Buff_Hom"
+
+
+pheno[grep("Smor_WA_01", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_02", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_07", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_1", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_13", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_14", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_15", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_16", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_17", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_18", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_19", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_20", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_21", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_22", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_23", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_24", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_25", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_26", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_27", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_28", pca$ind)] <- "Buff_Hom"
+pheno[grep("Smor_WA_29", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_30", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_31", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_32", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_33", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_34", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_35", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_37", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_38", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_39", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_40", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_41", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_42", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_43", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_44", pca$ind)] <- "Silver"
+pheno[grep("Smor_WA_45", pca$ind)] <- "Buff_Hom"
+pheno[grep("Smor_WA_46", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_47", pca$ind)] <- "Buff_Het"
+pheno[grep("Smor_WA_48", pca$ind)] <- "Silver"
+
+
+# remake data.frame
+pca <- as_tibble(data.frame(pca, pheno, spp))
+
+# first convert to percentage variance explained
+pve <- data.frame(PC = 1:20, pve = eigenval/sum(eigenval)*100)
+
+# make plot for eignevalues
+a <- ggplot(pve, aes(PC, pve)) + geom_bar(stat = "identity")
+a + ylab("Percentage variance explained") + theme_light()
+
+# calculate the cumulative sum of the percentage variance explained
+cumsum(pve$pve)
+
+
+# plot pca
+b <- ggplot(pca, aes(PC1, PC2, col = pheno, shape = spp)) + geom_point(size = 5)
+b <- b + scale_colour_manual(values = c("red", "blue", "orange"))
+b <- b + theme_classic()
+b + xlab(paste0("PC1 (", signif(pve$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)")) +
+  guides(shape = "none", color = "none")
+
+dev.copy(pdf, 'PCA_GWAS_interval.pdf',width=12,height=7)
+dev.off()
+```
 
 
 
