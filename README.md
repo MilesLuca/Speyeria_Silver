@@ -4,12 +4,19 @@ A collection of code used for our study detailing the genomic basis for the silv
 # Table of contents
 
 **1. Quality control - fastqc**
+
 **2. Alignment and genotype calling**
+
 **3. Alignment QC (depth measurments)**
+
 **4. VCF filtering**
+
 **5. Genome-wide association using GEMMA**
+
 **6. Importing p-values and chromosome positions in R and plotting**
+
 **7. Code for calculating Fst on morphs by populations**
+
 **8. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R**
 
 
