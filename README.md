@@ -944,9 +944,9 @@ library(tidyverse)
 
 **Plot genome-wide PCA**
 
-**Read in plink output**
-
 ```
+#Read in plink output
+
 pca <- read_table("PCA_WA_NV.eigenvec", col_names = FALSE)
 eigenval <- scan("PCA_WA_NV.eigenval")
 
