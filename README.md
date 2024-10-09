@@ -498,7 +498,7 @@ Optional: Reduce file size by filtering for min of 0.05
 awk '{ if($3 <= 0.05) { print }}' *pvals > Smor_silver.assoc.gemma.pval.noNA.0.05
 ```
 
-5. Import p-values and chromosome positions in R and plot them
+# 5. Import p-values and chromosome positions in R and plot them
 
 Functions to adjust scaffold positions
 
@@ -627,7 +627,7 @@ top = 18
 bot = 2.5
 ```
 
-#Check how many chromosomes you have
+Check how many chromosomes you have
 
 ```
 begin = chrom_coords$chromStarts[1]/1000000
