@@ -3,7 +3,7 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 # Table of contents
 
-# I. Figure 1 - GWAS, Fst, PCAs and genotype plots
+# I. Figure 2 - GWAS, Fst, PCAs and genotype plots
 
 ### 1. Alignment and genotype calling
 
