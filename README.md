@@ -1483,6 +1483,138 @@ SweeD -name SweeD.haplo.buff.mon.optix.NVJ -input SF2.haplo.buff.NVJ.input -grid
 
 ### 5. Topology Weighting by Iterative Subsampling (TWISST)
 
+**The topology analysis was run on the WA population only, as this is the population for which we had relevant outgroups**
+**Again, this is run using Simon Martin's scripts, by generating a geno file first, then recoding each haplotype based on diagnostic SNPs**
+
+```
+python /CCAS/home/lucalivraghi/tools/genomics_general/VCF_processing/parseVCF.py --skipIndels -i Chrm14.optix.filtered.WA.vcf.gz | gzip > Chrm14.optix.filtered.WA.geno.gz 
+
+python /CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/filterGenotypes.py \
+--threads 40 \
+--ploidy 2 \
+-of bases \
+-i Chrm14.optix.filtered.WA.geno.gz | gzip > Chrm14.optix.filtered.WA.geno.haplo.gz
+```
+
+**Then make the haplotype specific popsfile**
+
+```
+nano popsfilehaplo.txt
+
+Scor_WA_01_A	coronis.silver
+Scor_WA_01_B	coronis.silver
+Shyd_WA_05_A	hydaspe.buff
+Shyd_WA_05_B	hydaspe.buff
+Shyd_WA_06_A	hydaspe.silver
+Shyd_WA_06_B	hydaspe.buff
+Shyd_WA_08_A	hydaspe.buff
+Shyd_WA_08_B	hydaspe.buff
+Shyd_WA_09_A	hydaspe.buff
+Shyd_WA_09_B	hydaspe.buff
+Shyd_WA_10_A	hydaspe.buff
+Shyd_WA_10_B	hydaspe.silver
+Smor_WA_01_A	morm_WA.silver
+Smor_WA_01_B	morm_WA.silver
+Smor_WA_02_A	morm_WA.silver
+Smor_WA_02_B	morm_WA.silver
+Smor_WA_07_A	morm_WA.buff
+Smor_WA_07_B	morm_WA.silver
+Smor_WA_11_A	morm_WA.silver
+Smor_WA_11_B	morm_WA.silver
+Smor_WA_13_A	morm_WA.silver
+Smor_WA_13_B	morm_WA.buff
+Smor_WA_14_A	morm_WA.silver
+Smor_WA_14_B	morm_WA.buff
+Smor_WA_15_A	morm_WA.silver
+Smor_WA_15_B	morm_WA.silver
+Smor_WA_16_A	morm_WA.silver
+Smor_WA_16_B	morm_WA.buff
+Smor_WA_17_A	morm_WA.buff
+Smor_WA_17_B	morm_WA.silver
+Smor_WA_18_A	morm_WA.silver
+Smor_WA_18_B	morm_WA.buff
+Smor_WA_19_A	morm_WA.silver
+Smor_WA_19_B	morm_WA.silver
+Smor_WA_20_A	morm_WA.silver
+Smor_WA_20_B	morm_WA.silver
+Smor_WA_21_A	morm_WA.silver
+Smor_WA_21_B	morm_WA.silver
+Smor_WA_22_A	morm_WA.silver
+Smor_WA_22_B	morm_WA.silver
+Smor_WA_23_A	morm_WA.buff
+Smor_WA_23_B	morm_WA.silver
+Smor_WA_24_A	morm_WA.silver
+Smor_WA_24_B	morm_WA.silver
+Smor_WA_25_A	morm_WA.silver
+Smor_WA_25_B	morm_WA.silver
+Smor_WA_26_A	morm_WA.silver
+Smor_WA_26_B	morm_WA.silver
+Smor_WA_27_A	morm_WA.silver
+Smor_WA_27_B	morm_WA.silver
+Smor_WA_28_A	morm_WA.buff
+Smor_WA_28_B	morm_WA.buff
+Smor_WA_29_A	morm_WA.silver
+Smor_WA_29_B	morm_WA.silver
+Smor_WA_30_A	morm_WA.silver
+Smor_WA_30_B	morm_WA.buff
+Smor_WA_31_A	morm_WA.silver
+Smor_WA_31_B	morm_WA.silver
+Smor_WA_32_A	morm_WA.silver
+Smor_WA_32_B	morm_WA.buff
+Smor_WA_33_A	morm_WA.silver
+Smor_WA_33_B	morm_WA.silver
+Smor_WA_34_A	morm_WA.silver
+Smor_WA_34_B	morm_WA.silver
+Smor_WA_35_A	morm_WA.silver
+Smor_WA_35_B	morm_WA.buff
+Smor_WA_37_A	morm_WA.silver
+Smor_WA_37_B	morm_WA.buff
+Smor_WA_38_A	morm_WA.silver
+Smor_WA_38_B	morm_WA.silver
+Smor_WA_39_A	morm_WA.silver
+Smor_WA_39_B	morm_WA.silver
+Smor_WA_40_A	morm_WA.buff
+Smor_WA_40_B	morm_WA.silver
+Smor_WA_41_A	morm_WA.silver
+Smor_WA_41_B	morm_WA.buff
+Smor_WA_42_A	morm_WA.silver
+Smor_WA_42_B	morm_WA.silver
+Smor_WA_43_A	morm_WA.buff
+Smor_WA_43_B	morm_WA.silver
+Smor_WA_44_A	morm_WA.silver
+Smor_WA_44_B	morm_WA.silver
+Smor_WA_45_A	morm_WA.buff
+Smor_WA_45_B	morm_WA.buff
+Smor_WA_46_A	morm_WA.silver
+Smor_WA_46_B	morm_WA.buff
+Smor_WA_47_A	morm_WA.buff
+Smor_WA_47_B	morm_WA.silver
+Smor_WA_48_A	morm_WA.silver
+Smor_WA_48_B	morm_WA.silver
+```
+
+**Then generate the trees using 50bp windows**
+
+```
+module load phyML/3.3 
+
+python /CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/phylo/phyml_sliding_windows.py \
+-g Chrm14.optix.filtered.WA.geno.haplo.gz \
+--prefix Chrm14.optix.filtered.all.trees.haplo \
+-T 32 \
+--windType sites --model GTR -w 50 --optimise n
+```
+
+**The trees are then used as the inputs for the twisst analysis**
+
+```
+python /CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/twisst/twisst.py -t Chrm14.optix.filtered.all.trees.haplo.trees.gz \
+-w SmorWA.haplo.weights.tsv \
+-g coronis.silver -g hydaspe.buff -g morm_WA.buff -g morm_WA.silver --groupsFile popsfilehaplo.txt \
+--method fixed --iterations 500 --outgroup coronis.silver
+```
+
+
 ### 6. Proportion of introgression in sliding windows (fd)
 
 
