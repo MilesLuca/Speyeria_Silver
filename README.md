@@ -1458,6 +1458,29 @@ NVJ_81_Smor_S_B	morm_NVJ.silver
 
 ### 4. Sweep analysis using SweeD
 
+**The same phased and recoded haplotype was used to generate selective sweep statistics using the SweeD program**
+**The vcf file is first split into single haplotype vcfs from each population, containing only unsilvered or silver haplotypes based on the diagnostic SNPs**
+
+For example, using bcftools, the NV population vcf for unsilvered alleles is filtered like this:
+
+```
+bcftools view --threads 32 --samples NVJ_51_Smor_B_A,NVJ_53_Smor_B_A,NVJ_53_Smor_B_B,NVJ_54_Smor_B_A,NVJ_58_Smor_B_A,NVJ_59_Smor_B_A,NVJ_61_Smor_B_A,NVJ_61_Smor_B_B,NVJ_64_Smor_B_A,NVJ_64_Smor_B_B,NVJ_68_Smor_B_A,NVJ_68_Smor_B_B,NVJ_69_Smor_B_B,NVJ_70_Smor_B_A,NVJ_71_Smor_B_A,NVJ_71_Smor_B_B,NVJ_73_Smor_B_A,NVJ_73_Smor_B_B,NVJ_76_Smor_B_A Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.haplo.vcf.gz -O z -o Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.haplo.buff.NVJ.vcf.gz
+```
+
+**Next, vcftools is used to generate a site frequency spectrum file as input for SweeD**
+
+Example on the NV vcf as above:
+
+```
+vcftools --counts2 --gzvcf Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.haplo.buff.NVJ.vcf.gz --stdout | awk 'NR<=1 {next} {print $2"\t"$6"\t"$4"\t0"}' > SF2.haplo.buff.NVJ.input
+```
+
+**SweeD is then run on this file using a grid size of 30kb, and including monomorphic sites**
+
+```
+SweeD -name SweeD.haplo.buff.mon.optix.NVJ -input SF2.haplo.buff.NVJ.input -grid 30000 -monomorphic
+```
+
 ### 5. Topology Weighting by Iterative Subsampling (TWISST)
 
 ### 6. Proportion of introgression in sliding windows (fd)
