@@ -1433,10 +1433,25 @@ NVJ_81_Smor_S_A	morm_NVJ.silver
 NVJ_81_Smor_S_B	morm_NVJ.silver
 ```
 
-
 ### 2. Fst recalculated on phased haplotypes
 
+**Calculate Fst using the recoded individual haplotypes. These are calculated in 200bp windows with a 100bp slide**
+**Statistics are calculated on all relevant population comparions, but code is illustrating WA population here**
+
+```
+/CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/popgenWindows.py -w 200 -s 100 -g Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.geno.haplo.gz -o popgenstats_Smor_WA_S_haplo.vs.SmorWA_B_haplo_200w100s_phased.csv.gz -f haplo -T 32 -p morm_WA.silver -p morm_WA.buff --popsFile popsfilehaplo.txt
+```
+
 ### 3. Dxy, Pi, and Tajima's calculated on phased haplotypes
+
+**Calculate statistics using the recoded individual haplotypes as above. These are calculated in 200bp windows with a 100bp slide**
+
+```
+/CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/popgenWindows.py \
+-w 200 -s 100 \
+-g Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.geno.haplo.gz \
+-o popgenstats_Smor_NVJ_S_haplo.vs.SmorWA_B_haplo_200w_100s_phased.freq.csv.gz -f haplo -T 32 -p morm_WA.silver -p morm_WA.buff --popsFile popsfilehaplo.txt --analysis popFreq
+```
 
 ### 4. Sweep analysis using SweeD
 
