@@ -1439,7 +1439,10 @@ NVJ_81_Smor_S_B	morm_NVJ.silver
 **Statistics are calculated on all relevant population comparions, but code is illustrating WA population here**
 
 ```
-/CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/popgenWindows.py -w 200 -s 100 -g Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.geno.haplo.gz -o popgenstats_Smor_WA_S_haplo.vs.SmorWA_B_haplo_200w100s_phased.csv.gz -f haplo -T 32 -p morm_WA.silver -p morm_WA.buff --popsFile popsfilehaplo.txt
+/CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/popgenWindows.py \
+-w 200 -s 100 \
+-g Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.geno.haplo.gz \
+-o popgenstats_Smor_WA_S_haplo.vs.SmorWA_B_haplo_200w100s_phased.csv.gz -f haplo -T 32 -p morm_WA.silver -p morm_WA.buff --popsFile popsfilehaplo.txt
 ```
 
 ### 3. Dxy, Pi, and Tajima's calculated on phased haplotypes
