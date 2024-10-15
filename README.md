@@ -39,6 +39,7 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 ### 6. Proportion of introgression in sliding windows (fd)
 
+### 7. Plot all haplotype based statistics in R
 
 
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -1631,4 +1632,271 @@ python /CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/twisst/twis
 --popsFile popsfilehaplo.txt 
 ```
 
+### 7. Plot all haplotype based statistics in R
 
+**These stats are all plotted in R. The code below shows is shown as representative of the WA pops plots**
+
+#Code for plotting popgen stats at chromosome 14
+library(ggplot2)
+library(gridExtra)
+library(tidyverse)
+
+```
+#Read the file contiaing the popgenstats for WA pops (Fst, Dxy, Pi)
+file.popgen.stats <- read.csv("popgenstats_Smor_WA_S_haplo.vs.SmorWA_B_haplo_200w100s_phased.csv.gz", h=T)
+head(file.popgen.stats)
+
+file.popgen.stats.freq <- read.csv("popgenstats_Smor_WA_S_haplo.vs.SmorWA_B_haplo_200w_100s_phased.freq.csv.gz", h=T)
+head(file.popgen.stats.freq)
+
+SDB <- read.table("SweeD_Report.SweeD.haplo.buff.silver.mon.optix.WA", h=T)
+head(SDB)
+
+#Make the plot for optix annotation (CDS and UTR)
+
+
+p0 <- ggplot() + 
+  geom_rect(aes(xmin = 1506454, xmax = 1506853, ymin = 0, ymax = 1), fill = "grey") + # No specific y-axis placement
+  geom_rect(aes(xmin = 1492189, xmax = 1492995, ymin = 0, ymax = 1), fill = "grey") + 
+  xlim(1480000, 1550000) +
+  theme_classic() +
+  theme(
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none"
+  )
+
+
+#Make the plot for FST between silver and buff HAPLOTYPES
+
+# Calculate 99% quantile threshold for Fst_morm_WA.silver_morm_WA.buff
+threshold <- quantile(file.popgen.stats$Fst_morm_WA.silver_morm_WA.buff, 0.99, na.rm = TRUE)
+
+
+# Create a new column 'outlier' to flag points above the threshold
+file.popgen.stats$outlier <- ifelse(file.popgen.stats$Fst_morm_WA.silver_morm_WA.buff > threshold, "outlier", "non-outlier")
+
+
+p1 <- ggplot(data = file.popgen.stats, aes(x = mid, y = Fst_morm_WA.silver_morm_WA.buff)) +
+  geom_point(aes(color = outlier), pch = 19, size = 1, alpha = 0.5) + # Map 'outlier' to color
+  scale_color_manual(values = c("outlier" = "red", "non-outlier" = "grey")) + # Define colors for outliers and non-outliers
+  geom_smooth(method = "loess", se = FALSE, color = "black", span = 0.05, size = 0.8) +
+  theme_classic() + 
+  xlim(1480000, 1550000) +
+  ylim(0, 1) +
+  theme(
+    legend.position = "none", 
+    axis.title.y = element_text(size = 8), 
+    axis.text.y = element_text(size = 6), 
+    axis.title.x = element_blank(), 
+    axis.text.x = element_blank()
+  ) +
+  ylab("FST") + 
+  xlab("Position (bp)")
+
+# Calculate 99% quantile threshold for dxy
+threshold <- quantile(file.popgen.stats$dxy_morm_WA.silver_morm_WA.buff, 0.95, na.rm = TRUE)
+
+
+# Create a new column 'outlier' to flag points above the threshold
+file.popgen.stats$outlier <- ifelse(file.popgen.stats$dxy_morm_WA.silver_morm_WA.buff > threshold, "outlier", "non-outlier")
+
+
+p2 <- ggplot(data = file.popgen.stats, aes(x = mid, y = dxy_morm_WA.silver_morm_WA.buff)) +
+  geom_point(aes(color = outlier), pch = 19, size = 1, alpha = 0.5) + # Map 'outlier' to color
+  scale_color_manual(values = c("outlier" = "red", "non-outlier" = "grey")) + # Define colors for outliers and non-outliers
+  geom_smooth(method = "loess", se = FALSE, color = "black", span = 0.05, size = 0.8) +
+  theme_classic() + 
+  xlim(1480000, 1550000) +
+  ylim(0, 0.26) +
+  theme(
+    legend.position = "none", 
+    axis.title.y = element_text(size = 8), 
+    axis.text.y = element_text(size = 6), 
+    axis.title.x = element_blank(), 
+    axis.text.x = element_blank()
+  ) +
+  ylab("Dxy") + 
+  xlab("Position (bp)")
+
+#Alternative plot as buff subtracted from silver Pi with outliers
+
+# Generate the distribution
+pi.buff.minus.pi.silver <- file.popgen.stats$pi_morm_WA.buff - file.popgen.stats$pi_morm_WA.silver
+
+# Calculate 99th and 1th percentile thresholds
+threshold_upper <- quantile(pi.buff.minus.pi.silver, 0.99, na.rm = TRUE)
+threshold_lower <- quantile(pi.buff.minus.pi.silver, 0.01, na.rm = TRUE)
+
+# Flag points as outliers if they are above the 95th percentile or below the 5th percentile
+file.popgen.stats$outlier.delta.pi <- ifelse(pi.buff.minus.pi.silver > threshold_upper | 
+                                               pi.buff.minus.pi.silver < threshold_lower, 
+                                             "outlier", "non-outlier")
+
+
+# Plot with outliers colored
+p3 <- ggplot(data = file.popgen.stats) +
+  geom_point(aes(x = mid, y = pi_morm_WA.buff - pi_morm_WA.silver, color = outlier.delta.pi), pch = 19, size = 1, alpha = 0.5) +
+  geom_smooth(aes(x = mid, y = pi_morm_WA.buff - pi_morm_WA.silver), method = "loess", se = FALSE, color = "black", span = 0.05, size = 0.8) +
+  theme_classic() + 
+  scale_color_manual(values = c("outlier" = "red", "non-outlier" = "grey")) +  # Color outliers in red, others in black
+  xlim(1480000, 1550000) +
+  ylim(-0.15, 0.15) +
+  theme(legend.position = "none", axis.title.y = element_text(size = 8), axis.text.y = element_text(size = 6), axis.title.x = element_blank(), axis.text.x = element_blank()) +
+  ylab("Δπ") + 
+  xlab("Position (bp)")
+
+#Make the plot for TajD for silver and buff haplotypes calculating outliers for their respective distributions
+
+# Calculate 99th and 1st percentiles for TajD_morm_WA.silver
+threshold_upper_silver <- quantile(file.popgen.stats.freq$TajD_morm_WA.silver, 0.99, na.rm = TRUE)
+threshold_lower_silver <- quantile(file.popgen.stats.freq$TajD_morm_WA.silver, 0.01, na.rm = TRUE)
+
+# Calculate 99th and 1st percentiles for TajD_morm_WA.buff
+threshold_upper_buff <- quantile(file.popgen.stats.freq$TajD_morm_WA.buff, 0.99, na.rm = TRUE)
+threshold_lower_buff <- quantile(file.popgen.stats.freq$TajD_morm_WA.buff, 0.01, na.rm = TRUE)
+
+# Create separate flags for outliers in silver and buff
+file.popgen.stats.freq$outlier_silver <- ifelse(
+  file.popgen.stats.freq$TajD_morm_WA.silver > threshold_upper_silver | 
+    file.popgen.stats.freq$TajD_morm_WA.silver < threshold_lower_silver, 
+  "outlier", "non-outlier"
+)
+
+file.popgen.stats.freq$outlier_buff <- ifelse(
+  file.popgen.stats.freq$TajD_morm_WA.buff > threshold_upper_buff | 
+    file.popgen.stats.freq$TajD_morm_WA.buff < threshold_lower_buff, 
+  "outlier", "non-outlier"
+)
+
+# Plot with full opacity for outliers and transparency for non-outliers, separately for silver and buff
+p4 <- ggplot(data = file.popgen.stats.freq) +
+  # Silver points
+  geom_point(aes(x = mid, y = TajD_morm_WA.silver, shape = outlier_silver, alpha = outlier_silver), size = 1, color = "#1baae2") +
+  geom_smooth(aes(x = mid, y = TajD_morm_WA.silver), method = "loess", se = FALSE, color = "#1baae2", span = 0.05, size = 0.8) +
+  # Buff points
+  geom_point(aes(x = mid, y = TajD_morm_WA.buff, shape = outlier_buff, alpha = outlier_buff), size = 1, color = "#f89b31") +
+  geom_smooth(aes(x = mid, y = TajD_morm_WA.buff), method = "loess", se = FALSE, color = "#f89b31", span = 0.05, size = 0.8) +
+  # Set shapes and alpha for outliers and non-outliers
+  scale_shape_manual(values = c("outlier" = 19, "non-outlier" = 1)) +  # Full circle (19) for outliers, empty circle (1) for non-outliers
+  scale_alpha_manual(values = c("outlier" = 1, "non-outlier" = 0.3)) + # Full opacity for outliers, transparency for non-outliers
+  theme_classic() + 
+  xlim(1480000, 1550000) +
+  theme(legend.position = "none", axis.title.y = element_text(size = 8), axis.text.y = element_text(size = 6), axis.title.x = element_blank(), axis.text.x = element_blank()) +
+  ylab("TajD Silver / Buff") + 
+  xlab("Position (bp)")
+
+  #Make the plot for CLR for silver and buff haplotypes  
+
+p5 <- ggplot(data = SDB) +
+  geom_line(aes(x = Position.b, y = Likelihood.b), pch = 19, size = 1, color = "#f89b31", alpha = 0.7) +
+  geom_line(aes(x = Position.s, y = Likelihood.s), pch = 19, size = 1, color = "#1baae2", alpha = 0.4) +
+  theme_classic() + 
+  xlim(1480000, 1550000) +
+  ylim(0,100) +
+  theme(legend.position = "none", axis.title.y = element_text(size = 8), axis.text.y = element_text(size = 6), axis.title.x = element_blank(), axis.text.x = element_blank() ) +
+  ylab("CLR Silver / Buff") + 
+  xlab("Position (bp)")
+
+############################## input files for twisst ######################################
+
+source("plot_twisst.R")
+
+#weights file with a column for each topology
+weights_file <- "SmorWA.haplo.weights.tsv"
+
+#coordinates file for each window
+window_data_file <- "Chrm14.optix.filtered.all.trees.haplo.data.tsv"
+
+
+################################# import data ##################################
+
+# The function import.twisst reads the weights, window data  files into a list object
+# If there are multiple weights files, or a single file with different chromosomes/scaffolds/contigs
+# in the window data file, these will be separated when importing.
+
+twisst_data <- import.twisst(weights_files=weights_file,
+                             window_data_files=window_data_file)
+
+
+############################## combined plots ##################################
+# there are a functions available to plot both the weightings and the topologies
+
+# make smooth weightings and plot those across chromosomes
+twisst_data_smooth <- smooth.twisst(twisst_data, span_bp = 23000, spacing = 1000)
+
+# Load required libraries
+library(reshape2)
+
+# Extract weights from twisst_data_smooth
+weights_df <- as.data.frame(twisst_data_smooth$weights[[1]])
+
+# Add a region column to represent x-axis (for example, region number)
+weights_df$region <- twisst_data_smooth$pos[[1]]
+
+# Multiply topo1 and topo2 by -1 to invert them
+weights_df$topo1 <- -weights_df$topo1
+weights_df$topo2 <- -weights_df$topo2
+
+# Melt the data frame to long format for ggplot
+weights_long <- melt(weights_df, id.vars = "region", variable.name = "topology", value.name = "weight")
+
+# Plot using ggplot
+
+topo_colors <- c("topo1" = "blue", "topo2" = "cyan", "topo3" = "red")
+
+
+p6 <- ggplot(weights_long, aes(x = region, y = weight, fill = topology)) +
+  geom_area(position = "identity", alpha = 0.3) +
+  scale_fill_manual(values = topo_colors) +
+  labs(x = "Position (bp)", y = "Weight") +
+  theme_classic() +
+  xlim(1480000, 1550000) +
+  theme(legend.position = "none", axis.title.y = element_text(size = 8), axis.text.y = element_text(size = 6), axis.title.x = element_text(size = 8), axis.text.x = element_text(size = 6) )
+  
+
+##ABBA-BABA-fd###
+file.popgen.stats <- read.csv("ABBABABBA.csv", h=T)
+head(file.popgen.stats)
+
+#fd is meaningless when D is negative, as it is designed to quantify the excess of ABBA over BABA only whgen an excess exists.
+#We therefore convert all fd values to 0 at sites where D is negative.
+
+file.popgen.stats$fd[file.popgen.stats$D < 0] <- 0
+
+
+p7 <- ggplot(data = file.popgen.stats) +
+  geom_point(aes(x = mid, y = fd), pch = 19, size = 1, color = "red", alpha = 0.4) +
+  theme_classic() + 
+  xlim(1480000, 1550000) +
+  ylim(0, 1) +
+  ylab("fd hyd to morm") +
+  theme(legend.position = "none", axis.title.y = element_text(size = 8), axis.text.y = element_text(size = 6), axis.title.x = element_blank(), axis.text.x = element_blank() ) +
+  xlab("Position (bp)")
+
+
+
+p0 <- ggplotGrob(p0)
+p1 <- ggplotGrob(p1)
+p2 <- ggplotGrob(p2)
+p3 <- ggplotGrob(p3)
+p4 <- ggplotGrob(p4)
+p5 <- ggplotGrob(p5)
+p6 <- ggplotGrob(p6)
+p7 <- ggplotGrob(p7)
+
+
+maxWidth = grid::unit.pmax(p0$widths[2:5], p1$widths[2:5], p2$widths[2:5], p3$widths[2:5], p4$widths[2:5], p5$widths[2:5], p6$widths[2:5], p7$widths[2:5])
+p0$widths[2:5] <- as.list(maxWidth)
+p1$widths[2:5] <- as.list(maxWidth)
+p2$widths[2:5] <- as.list(maxWidth)
+p3$widths[2:5] <- as.list(maxWidth)
+p4$widths[2:5] <- as.list(maxWidth)
+p5$widths[2:5] <- as.list(maxWidth)
+p6$widths[2:5] <- as.list(maxWidth)
+p7$widths[2:5] <- as.list(maxWidth)
+
+grid.arrange(p0, p1, p2, p3, p4, p5, p7, p6, ncol = 1, heights = c(2.5, 10 ,10, 10, 10, 10, 10, 15))
+```
