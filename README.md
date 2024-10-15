@@ -1617,5 +1617,18 @@ python /CCAS/home/lucalivraghi/tools/popgen_scripts/genomics_general/twisst/twis
 
 ### 6. Proportion of introgression in sliding windows (fd)
 
+**The same vcf file that is used for the twisst analysis is also used for calculating fd in sliding windows.**
+**Analysis is run in 1.5kb windows with a 150bp slide**
+
+```
+/CCAS/home/lucalivraghi/tools/genomics_general/ABBABABAwindows.py -g Chrm14.optix.filtered.WA.geno.haplo.gz \
+-f haplo \
+--ploidy 1 \
+-o ABBABABBA.csv \
+-w 1500 -m 10 -s 150  \
+-P1 morm_WA.silver -P2 morm_WA.buff -P3 hydaspe.buff -O coronis.silver -T 25  \
+--minData 0.5  \
+--popsFile popsfilehaplo.txt 
+```
 
 
