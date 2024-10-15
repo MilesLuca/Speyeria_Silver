@@ -1221,14 +1221,228 @@ dev.off()
 
 # II. Figure 4 - Haplotype based statistics, sweeps and introgression analyses (Fst, Dxy, Tajima's D, CLR, TWISST, Fd)
 
-### 1. Fst recalculated on phased haplotypes
+The following code is used to calculate popgen statistics in sliding windows on **phased haplotypes**, having assigned each haplotype group based on three diagnostic SNPs idenitifed in Figure 2.
+For these statistics, a vcf file **including invariant SNPs** was used. 
+Analyses were limited to chromosome 14 to speed up computation times.
+Again, Simon Martin's scripts were used for calculations.
 
-### 2. Dxy, Pi, and Tajima's calculated on phased haplotypes
+### 1. Vcf filtering and recoding
 
-### 3. Sweep analysis using SweeD
+**The output vcf from gatk still contained some single "*" denoting single deletions, which were causing problems in the downstream analyses, so these are removed using bcftools:**
 
-### 4. Topology Weighting by Iterative Subsampling (TWISST)
+```
+bcftools filter --threads 40 -e 'ALT="*" || GT~"\*"' Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.vcf.gz -O z -o Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.vcf.gz
+```
 
-### 5. Proportion of introgression in sliding windows (fd)
+**The vcf file is then phased using beagle and inexed using bcftools**
+
+```
+java -Xmx50g -jar /CCAS/home/lucalivraghi/tools/beagle/beagle.05May22.33a.jar impute=FALSE window=1 overlap=0.1 nthreads=40 gt=Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.vcf.gz out=Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled
+bcftools index --threads 40 Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.vcf.gz
+```
+
+**A custom script is then used to separate each haplotype into a new entry in the vcf, recoding individual haplotypes as either "_A" or "_B" haplotypes.**
+
+```
+zcat Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.vcf.gz | \
+awk '{
+    if ($1 ~ /^##/) {
+        print;
+    } else if ($1=="#CHROM") {
+        ORS="\t";
+        for (i=1; i<=9; i++) print $i;
+        for (i=10; i<NF; i++) {print $i"_A\t"$i"_B";}
+        ORS="\n";
+        print $NF"_A\t"$NF"_B";
+    } else {
+        ORS="\t";
+        for (i=1; i<=9; i++) print $i;
+        for (i=10; i<NF; i++) print substr($i, 1, 1)"\t"substr($i, 3, 1);
+        ORS="\n";
+        print substr($NF, 1, 1)"\t"substr($NF, 3, 1);
+    }
+}' > Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.haplo.vcf.gz
+```
+
+**Then recode this into geno format to run Simon Martin's scripts**
+
+```
+python /CCAS/home/lucalivraghi/tools/genomics_general/VCF_processing/parseVCF.py \
+--skipIndels \
+--ploidy 1 \
+-i Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.haplo.vcf.gz | gzip > Smor.snps_filtered.Smor1400.WA.NVJ.hyd.cor.removedasterisk.beagled.geno.haplo.gz
+```
+
+**The resulting geno file was then inspected at each of the diagnostic SNP positions (Smor1400:1508598, Smor1400:1508581, Smor1400:1508599), and used to recode the popsfile**
+**Buff alleles have "G,T,T" and silver alleles "T,C,A" at those positions.**
+
+```
+nano popsfilehaplo.txt
+
+Scor_WA_01_A	coronis.silver
+Scor_WA_01_B	coronis.silver
+Shyd_WA_05_A	hydaspe.buff
+Shyd_WA_05_B	hydaspe.buff
+Shyd_WA_06_A	hydaspe.buff
+Shyd_WA_06_B	hydaspe.buff
+Shyd_WA_08_A	hydaspe.buff
+Shyd_WA_08_B	hydaspe.buff
+Shyd_WA_09_A	hydaspe.buff
+Shyd_WA_09_B	hydaspe.buff
+Shyd_WA_10_A	hydaspe.buff
+Shyd_WA_10_B	hydaspe.buff
+Smor_WA_01_A	morm_WA.silver
+Smor_WA_01_B	morm_WA.silver
+Smor_WA_02_A	morm_WA.silver
+Smor_WA_02_B	morm_WA.silver
+Smor_WA_07_A	morm_WA.buff
+Smor_WA_07_B	morm_WA.silver
+Smor_WA_11_A	morm_WA.silver
+Smor_WA_11_B	morm_WA.silver
+Smor_WA_13_A	morm_WA.silver
+Smor_WA_13_B	morm_WA.buff
+Smor_WA_14_A	morm_WA.buff
+Smor_WA_14_B	morm_WA.silver
+Smor_WA_15_A	morm_WA.silver
+Smor_WA_15_B	morm_WA.silver
+Smor_WA_16_A	morm_WA.silver
+Smor_WA_16_B	morm_WA.buff
+Smor_WA_17_A	morm_WA.silver
+Smor_WA_17_B	morm_WA.buff
+Smor_WA_18_A	morm_WA.silver
+Smor_WA_18_B	morm_WA.buff
+Smor_WA_19_A	morm_WA.silver
+Smor_WA_19_B	morm_WA.silver
+Smor_WA_20_A	morm_WA.silver
+Smor_WA_20_B	morm_WA.silver
+Smor_WA_21_A	morm_WA.silver
+Smor_WA_21_B	morm_WA.silver
+Smor_WA_22_A	morm_WA.silver
+Smor_WA_22_B	morm_WA.silver
+Smor_WA_23_A	morm_WA.buff
+Smor_WA_23_B	morm_WA.silver
+Smor_WA_24_A	morm_WA.silver
+Smor_WA_24_B	morm_WA.silver
+Smor_WA_25_A	morm_WA.silver
+Smor_WA_25_B	morm_WA.silver
+Smor_WA_26_A	morm_WA.silver
+Smor_WA_26_B	morm_WA.silver
+Smor_WA_27_A	morm_WA.silver
+Smor_WA_27_B	morm_WA.silver
+Smor_WA_28_A	morm_WA.buff
+Smor_WA_28_B	morm_WA.buff
+Smor_WA_29_A	morm_WA.silver
+Smor_WA_29_B	morm_WA.silver
+Smor_WA_30_A	morm_WA.silver
+Smor_WA_30_B	morm_WA.buff
+Smor_WA_31_A	morm_WA.silver
+Smor_WA_31_B	morm_WA.silver
+Smor_WA_32_A	morm_WA.silver
+Smor_WA_32_B	morm_WA.buff
+Smor_WA_33_A	morm_WA.silver
+Smor_WA_33_B	morm_WA.silver
+Smor_WA_34_A	morm_WA.silver
+Smor_WA_34_B	morm_WA.silver
+Smor_WA_35_A	morm_WA.silver
+Smor_WA_35_B	morm_WA.buff
+Smor_WA_37_A	morm_WA.silver
+Smor_WA_37_B	morm_WA.buff
+Smor_WA_38_A	morm_WA.silver
+Smor_WA_38_B	morm_WA.silver
+Smor_WA_39_A	morm_WA.silver
+Smor_WA_39_B	morm_WA.silver
+Smor_WA_40_A	morm_WA.silver
+Smor_WA_40_B	morm_WA.buff
+Smor_WA_41_A	morm_WA.buff
+Smor_WA_41_B	morm_WA.silver
+Smor_WA_42_A	morm_WA.silver
+Smor_WA_42_B	morm_WA.silver
+Smor_WA_43_A	morm_WA.buff
+Smor_WA_43_B	morm_WA.silver
+Smor_WA_44_A	morm_WA.silver
+Smor_WA_44_B	morm_WA.silver
+Smor_WA_45_A	morm_WA.buff
+Smor_WA_45_B	morm_WA.buff
+Smor_WA_46_A	morm_WA.buff
+Smor_WA_46_B	morm_WA.silver
+Smor_WA_47_A	morm_WA.silver
+Smor_WA_47_B	morm_WA.buff
+Smor_WA_48_A	morm_WA.silver
+Smor_WA_48_B	morm_WA.silver
+NVJ_51_Smor_B_A	morm_NVJ.buff
+NVJ_51_Smor_B_B	morm_NVJ.silver
+NVJ_52_Smor_S_A	morm_NVJ.silver
+NVJ_52_Smor_S_B	morm_NVJ.silver
+NVJ_53_Smor_B_A	morm_NVJ.buff
+NVJ_53_Smor_B_B	morm_NVJ.buff
+NVJ_54_Smor_B_A	morm_NVJ.buff
+NVJ_54_Smor_B_B	morm_NVJ.silver
+NVJ_55_Smor_S_A	morm_NVJ.silver
+NVJ_55_Smor_S_B	morm_NVJ.silver
+NVJ_56_Smor_S_A	morm_NVJ.silver
+NVJ_56_Smor_S_B	morm_NVJ.silver
+NVJ_57_Smor_B_A	morm_NVJ.buff
+NVJ_57_Smor_B_B	morm_NVJ.silver
+NVJ_58_Smor_B_A	morm_NVJ.buff
+NVJ_58_Smor_B_B	morm_NVJ.silver
+NVJ_59_Smor_B_A	morm_NVJ.buff
+NVJ_59_Smor_B_B	morm_NVJ.silver
+NVJ_60_Smor_S_A	morm_NVJ.silver
+NVJ_60_Smor_S_B	morm_NVJ.silver
+NVJ_61_Smor_B_A	morm_NVJ.buff
+NVJ_61_Smor_B_B	morm_NVJ.buff
+NVJ_62_Smor_S_A	morm_NVJ.silver
+NVJ_62_Smor_S_B	morm_NVJ.silver
+NVJ_63_Smor_S_A	morm_NVJ.silver
+NVJ_63_Smor_S_B	morm_NVJ.silver
+NVJ_64_Smor_B_A	morm_NVJ.buff
+NVJ_64_Smor_B_B	morm_NVJ.buff
+NVJ_65_Smor_S_A	morm_NVJ.silver
+NVJ_65_Smor_S_B	morm_NVJ.silver
+NVJ_66_Smor_S_A	morm_NVJ.silver
+NVJ_66_Smor_S_B	morm_NVJ.silver
+NVJ_67_Smor_S_A	morm_NVJ.silver
+NVJ_67_Smor_S_B	morm_NVJ.silver
+NVJ_68_Smor_B_A	morm_NVJ.buff
+NVJ_68_Smor_B_B	morm_NVJ.buff
+NVJ_69_Smor_B_A	morm_NVJ.silver
+NVJ_69_Smor_B_B	morm_NVJ.buff
+NVJ_70_Smor_B_A	morm_NVJ.buff
+NVJ_70_Smor_B_B	morm_NVJ.silver
+NVJ_71_Smor_B_A	morm_NVJ.buff
+NVJ_71_Smor_B_B	morm_NVJ.buff
+NVJ_72_Smor_S_A	morm_NVJ.silver
+NVJ_72_Smor_S_B	morm_NVJ.silver
+NVJ_73_Smor_B_A	morm_NVJ.buff
+NVJ_73_Smor_B_B	morm_NVJ.buff
+NVJ_74_Smor_B_A	morm_NVJ.silver
+NVJ_74_Smor_B_B	morm_NVJ.buff
+NVJ_75_Smor_S_A	morm_NVJ.silver
+NVJ_75_Smor_S_B	morm_NVJ.silver
+NVJ_76_Smor_B_A	morm_NVJ.buff
+NVJ_76_Smor_B_B	morm_NVJ.silver
+NVJ_77_Smor_S_A	morm_NVJ.silver
+NVJ_77_Smor_S_B	morm_NVJ.silver
+NVJ_78_Smor_S_A	morm_NVJ.silver
+NVJ_78_Smor_S_B	morm_NVJ.silver
+NVJ_79_Smor_S_A	morm_NVJ.silver
+NVJ_79_Smor_S_B	morm_NVJ.silver
+NVJ_80_Smor_S_A	morm_NVJ.silver
+NVJ_80_Smor_S_B	morm_NVJ.silver
+NVJ_81_Smor_S_A	morm_NVJ.silver
+NVJ_81_Smor_S_B	morm_NVJ.silver
+```
+
+
+### 2. Fst recalculated on phased haplotypes
+
+### 3. Dxy, Pi, and Tajima's calculated on phased haplotypes
+
+### 4. Sweep analysis using SweeD
+
+### 5. Topology Weighting by Iterative Subsampling (TWISST)
+
+### 6. Proportion of introgression in sliding windows (fd)
+
 
 
