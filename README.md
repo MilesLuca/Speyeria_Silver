@@ -27,15 +27,18 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 # II. Figure 4 - Haplotype based statistics, sweeps and introgression analyses (Fst, Dxy, Tajima's D, CLR, TWISST, Fd)
 
-### 1. Fst recalculated on phased haplotypes
+### 1. Vcf filtering and recoding
 
-### 2. Dxy, Pi, and Tajima's calculated on phased haplotypes
+### 2. Fst recalculated on phased haplotypes
 
-### 3. Sweep analysis using SweeD
+### 3. Dxy, Pi, and Tajima's calculated on phased haplotypes
 
-### 4. Topology Weighting by Iterative Subsampling (TWISST)
+### 4. Sweep analysis using SweeD
 
-### 5. Proportion of introgression in sliding windows (fd)
+### 5. Topology Weighting by Iterative Subsampling (TWISST)
+
+### 6. Proportion of introgression in sliding windows (fd)
+
 
 
 -----------------------------------------------------------------------------------------------------------------------------------
