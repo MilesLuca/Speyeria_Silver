@@ -1,52 +1,32 @@
 # Speyeria_Silver
-A collection of code used for our study detailing the genomic basis for the silvering polymorphism in Speyeria mormonia.
+A collection of code used for our study detailing the genomic basis for the silvering polymorphism in *Speyeria mormonia*.
 
 # Table of contents
 
-# I. Figure 2 - GWAS, Fst, PCAs and genotype plots
+- [I. Figure 2 - GWAS, Fst, PCAs and genotype plots](#i-figure-2---gwas-fst-pcas-and-genotype-plots)
+  - [1. Alignment and genotype calling](#1-alignment-and-genotype-calling)
+  - [2. Alignment QC (depth measurements)](#2-alignment-qc-depth-measurements)
+  - [3. VCF filtering](#3-vcf-filtering)
+  - [4. Genome-wide association using GEMMA](#4-genome-wide-association-using-gemma)
+  - [5. Importing p-values and chromosome positions in R and plotting](#5-importing-p-values-and-chromosome-positions-in-r-and-plotting)
+  - [6. Code for calculating Fst on morphs by populations](#6-code-for-calculating-fst-on-morphs-by-populations)
+  - [7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R](#7-plotting-fst-and--log10-p-from-gwas-on-chromosome-region-of-interest-in-r)
+  - [8. Principle component analysis for genome-wide and GWAS specific regions](#8-principle-component-analysis-for-genome-wide-and-gwas-specific-regions)
+  - [9. Plot PCAs in R](#9-plot-pcas-in-r)
+  - [10. Genotype plot for SNP illustration at the GWAS interval](#10-genotype-plot-for-snp-illustration-at-the-gwas-interval)
 
-### 1. Alignment and genotype calling
-
-### 2. Alignment QC (depth measurments)
-
-### 3. VCF filtering
-
-### 4. Genome-wide association using GEMMA
-
-### 5. Importing p-values and chromosome positions in R and plotting
-
-### 6. Code for calculating Fst on morphs by populations
-
-### 7. Plotting Fst and -log10 P from GWAS on chromosome region of interest in R
-
-### 8. Principle component analysis for genome-wide and GWAS specific regions
-
-### 9. Plot PCAs in R
-
-### 10. Genotype plot for SNP illutsration at the GWAS interval
-
-# II. Figure 4 - Haplotype based statistics, sweeps and introgression analyses (Fst, Dxy, Tajima's D, CLR, TWISST, Fd)
-
-### 1. Vcf filtering and recoding
-
-### 2. Fst recalculated on phased haplotypes
-
-### 3. Dxy, Pi, and Tajima's calculated on phased haplotypes
-
-### 4. Sweep analysis using SweeD
-
-### 5. Topology Weighting by Iterative Subsampling (TWISST)
-
-### 6. Proportion of introgression in sliding windows (fd)
-
-### 7. Plot all haplotype based statistics in R
-
-
------------------------------------------------------------------------------------------------------------------------------------
+- [II. Figure 4 - Haplotype based statistics, sweeps and introgression analyses](#ii-figure-4---haplotype-based-statistics-sweeps-and-introgression-analyses)
+  - [1. VCF filtering and recoding](#1-vcf-filtering-and-recoding)
+  - [2. Fst recalculated on phased haplotypes](#2-fst-recalculated-on-phased-haplotypes)
+  - [3. Dxy, Pi, and Tajima's D calculated on phased haplotypes](#3-dxy-pi-and-tajimas-d-calculated-on-phased-haplotypes)
+  - [4. Sweep analysis using SweeD](#4-sweep-analysis-using-sweed)
+  - [5. Topology Weighting by Iterative Subsampling (TWISST)](#5-topology-weighting-by-iterative-subsampling-twisst)
+  - [6. Proportion of introgression in sliding windows (fd)](#6-proportion-of-introgression-in-sliding-windows-fd)
+  - [7. Plot all haplotype based statistics in R](#7-plot-all-haplotype-based-statistics-in-r)
 
 # I. Figure 2 - GWAS, Fst, PCAs and genotype plots
 
-## 1. [Link Text](###Alignment-and-genotype-calling)
+## 1. Alignment and genotype calling
 
 The following code is used to generate genome indexes, align sequencing data, mark sequencing duplicates, call genotypes and produce vcf files for downstream analyses.
 
