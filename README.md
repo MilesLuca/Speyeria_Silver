@@ -24,6 +24,28 @@ A collection of code used for our study detailing the genomic basis for the silv
   - [6. Proportion of introgression in sliding windows (fd)](#6-proportion-of-introgression-in-sliding-windows-fd)
   - [7. Plot all haplotype based statistics in R](#7-plot-all-haplotype-based-statistics-in-r)
 
+# Bioinformatics Tools
+
+Tools used for the analysis are liste below. 
+
+* gatk/4.1.4.1
+* picard/2.20.7
+* samtools/1.9
+* bwa/0.7.17-r1188
+* bcftools/1.9
+* mosdepth/0.3.3
+* beagle/5.4
+* plink/1.9
+* GenotypePlot/0.2.1
+* gemma/0.98.3
+* hifiasm/0.15.1
+* insitu_probe_generator/0.3.2
+* genomics_general
+* twisst
+* vcftools/0.1.17
+* SweeD/3.0
+
+
 # I. Figure 2 - GWAS, Fst, PCAs and genotype plots
 
 ## 1. Alignment and genotype calling
