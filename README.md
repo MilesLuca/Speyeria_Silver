@@ -26,7 +26,7 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 # Bioinformatics Tools
 
-Tools used for the analysis are liste below. 
+Tools used for the analysis are listed below. 
 
 * gatk/4.1.4.1
 * picard/2.20.7
