@@ -28,22 +28,24 @@ A collection of code used for our study detailing the genomic basis for the silv
 
 Tools used for the analysis are listed below. 
 
-* gatk/4.1.4.1
-* picard/2.20.7
-* samtools/1.9
-* bwa/0.7.17-r1188
-* bcftools/1.9
-* mosdepth/0.3.3
-* beagle/5.4
-* plink/1.9
-* GenotypePlot/0.2.1
-* gemma/0.98.3
-* hifiasm/0.15.1
-* insitu_probe_generator/0.3.2
-* genomics_general
-* twisst
-* vcftools/0.1.17
-* SweeD/3.0
+* R / ggplot2 package v.3.4.2
+* R / gridExtra package v.2.3
+* R / tidyverse package v.2.0.0
+* R / GenotypePlot package v.0.2.1
+* Java / GATK (Genome Analysis Toolkit) v.4.1.4.1
+* Java / Picard v.2.20.7
+* C / Samtools v.19
+* C / BWA (Burrows-Wheeler Aligner) v.0.7.17-r1188
+* Rust / Mosdepth v.0.3.3
+* Java / Beagle v.5.4
+* C/C++ / Plink v.1.9
+* C/C++ / GEMMA v.0.98.3
+* C/C++ / Hifiasm v.0.1.17
+* Python / Insitu Probe Generator v.0.3.2
+* C++ / Vcftools v.0.1.17
+* C++ / SweeD v.3.0
+* Python / genomics_general
+* Python / twisst
 
 
 # I. Figure 2 - GWAS, Fst, PCAs and genotype plots
