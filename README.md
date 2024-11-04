@@ -35,6 +35,7 @@ Tools used for the analysis are listed below.
 * Java / GATK (Genome Analysis Toolkit) v.4.1.4.1
 * Java / Picard v.2.20.7
 * C / Samtools v.19
+* C++ / Bcftools v.1.15.1 
 * C / BWA (Burrows-Wheeler Aligner) v.0.7.17-r1188
 * Rust / Mosdepth v.0.3.3
 * Java / Beagle v.5.4
